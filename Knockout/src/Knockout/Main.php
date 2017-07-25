@@ -40,7 +40,11 @@ Class Main extends PluginBase implements Listener{
         if(!is_dir($this->getDataFolder(). "data")){
             @mkdir($this->getDataFolder(). "data");
         }
+        $this->getServer()->getScheduler()->scheduleRepeatingTask($this->getTask(), 20);
         // TODO: Create a config to edit ALL things.
+    }
+    public function getTask(){
+        return new KnockoutTask($this);
     }
     public function onPreLogin(PlayerPreLoginEvent $event){
         $name = $event->getPlayer()->getName();
