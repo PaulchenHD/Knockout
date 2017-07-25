@@ -18,6 +18,15 @@ Class KnockoutTask extends PluginTask
      */
     public function onRun($currentTick)
     {
-
+        foreach($this->getOwner()->getServer()->getLevels() as $level){
+            foreach($level->getTiles() as $tiles){
+                if($tiles instanceof Sign){
+                    $sign = $tiles->getText();
+                    if($sign[0] == "§7[§aKnockout§7]"){
+                        // Coming soon.
+                    }
+                }
+            }
+        }
     }
 }
