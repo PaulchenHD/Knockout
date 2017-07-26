@@ -3,9 +3,14 @@
 namespace Knockout;
 
 use pocketmine\block\Block;
+use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityArmorChangeEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerChatEvent;
+use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerPreLoginEvent;
@@ -22,8 +27,11 @@ use pocketmine\tile\Tile;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat as Color;
 
+use Knockout\KnockoutTask;
+use Knockout\ArenaManager;
+
 Class Main extends PluginBase implements Listener{
-    public $config = [
+    public $data = [
         "weapon" => array(),
         "armor" => array(),
         "coins" => 0,
@@ -40,17 +48,31 @@ Class Main extends PluginBase implements Listener{
         if(!is_dir($this->getDataFolder(). "data")){
             @mkdir($this->getDataFolder(). "data");
         }
+        if(!is_dir($this->getDataFolder(). "arena")){
+            @mkdir($this->getDataFolder(). "arena");
+        }
+        if(!file_exists($this->getDataFolder()."Config.yml")){
+            $config = new Config($this->getDataFolder(). "Config.yml", Config::YAML);
+            $config->save();
+        }
         $this->getServer()->getScheduler()->scheduleRepeatingTask($this->getTask(), 20);
-        // TODO: Create a config to edit ALL things.
+        $this->getArenaManager()->arena["Test"] = 9;
+        $this->getArenaManager()->active["Test"] = true;
     }
     public function getTask(){
-        return new KnockoutTask($this);
+        return new KnockoutTask($this, $this->getArenaManager());
+    }
+    public function getArenaManager(){
+        return new ArenaManager($this);
+    }
+    public function onDrop(PlayerDropItemEvent $event){
+        $event->setCancelled(true);
     }
     public function onPreLogin(PlayerPreLoginEvent $event){
         $name = $event->getPlayer()->getName();
         if(!file_exists($this->getDataFolder(). "data/". $name . ".json")){
             $config = new Config($this->getDataFolder(). "data/". $name . ".json", Config::JSON);
-            $config->setAll($this->config);
+            $config->setAll($this->data);
             $config->save();
         }
     }
@@ -60,6 +82,7 @@ Class Main extends PluginBase implements Listener{
         $player->teleport($player->getLevel()->getSafeSpawn()); // TODO: Create a sign to join the game.
 
         $this->setNextPage($player, 0);
+
 
         $this->menu[$player->getName()] = 0;
         $this->cooldown[$player->getName()] = round(microtime(true) * 1000) + 6001;
