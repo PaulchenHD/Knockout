@@ -157,6 +157,7 @@ Class Main extends PluginBase implements Listener{
     }
     public function onInteract(PlayerInteractEvent $event){
         $name = $event->getPlayer()->getName();
+        $swords = array(268, 283, 272, 267, 276);
         $config = new Config($this->getDataFolder(). "data/". $name . ".json", Config::JSON);
         if($event->getItem()->getId() == 54){
             $this->setNextPage($event->getPlayer(), 1);
@@ -188,7 +189,26 @@ Class Main extends PluginBase implements Listener{
                 $this->setNextPage($event->getPlayer(), 4);
                 $this->menu[$name] = 1;
             }
-        }
+        }/*
+        elseif(in_array($event->getItem()->getId(), $swords)){
+            $config = new Config($this->getDataFolder(). "data/". $name . ".json", Config::JSON);
+            if($event->getItem()->getName() == "§6Wooden Sword - 210 Coins"){
+                if($config->get("coins") >= 210){
+                    if(!in_array(268, $config->get("weapon"))){
+                        $config->set("coins", $config->get("coins") - 210);
+                        array_push($config->get("weapon"), 268);
+                    }
+                }
+            }
+            elseif($event->getItem()->getName() == "§6Golden Sword - 370 Coins"){
+                if($config->get("coins") >= 370){
+                    if(!in_array(283, $config->get("weapon"))){
+                        $config->set("coins", $config->get("coins") - 370);
+                        array_push($config->get("weapon"), 283);
+                    }
+                }
+            }
+        }*/
         if($event->getItem()->getId() == 339){
             $this->getStats($event->getPlayer());
             $event->setCancelled(true);
