@@ -5,3 +5,4 @@ A currently not finished Knockout/KnockbackFFA plugin for Pocketmine.
 
 - Stats | 40% finished.
 - Shop | 30% finished.
+- Arena System
