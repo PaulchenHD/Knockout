@@ -127,7 +127,7 @@ Class Main extends PluginBase implements Listener{
                 $inv->clearAll();
                 $config = new Config($this->getDataFolder(). "data/". $player->getName() . ".json", Config::JSON);
                 $this->customItem($player, 0, 268, 0, 1, "§eWeapon - §6" . count($config->get("weapon")). " §eUnlocked!");
-                $this->customItem($player, 1, 299, 0, 1, "§eArmor");
+                $this->customItem($player, 1, 299, 0, 1, "§eArmor - §6". count($config->get("armor")). " §eUnlocked!");
                 $this->customItem($player, 8, 35, 14, 1, "§cBack");
                 break;
             case 2; // Weapon (Upgrades).
@@ -147,30 +147,47 @@ Class Main extends PluginBase implements Listener{
                 $this->customItem($player, 3, 301, 0, 1, "§eBoots");
                 $this->customItem($player, 8, 35, 14, 1, "§cBack");
                 break;
+            case 4; // Equipment
+                $inv->clearAll();
+                $this->customItem($player, 0, 268, 0, 1, "§eWeapon");
+                $this->customItem($player, 1, 299, 0, 1, "§eArmor");
+                $this->customItem($player, 8, 35, 14, 1, "§cBack");
+                break;
         }
     }
     public function onInteract(PlayerInteractEvent $event){
         $name = $event->getPlayer()->getName();
+        $config = new Config($this->getDataFolder(). "data/". $name . ".json", Config::JSON);
         if($event->getItem()->getId() == 54){
             $this->setNextPage($event->getPlayer(), 1);
             $event->setCancelled(true);
             $this->menu[$name] = 1;
         }
-        if($event->getItem()->getId() == 35){
+        elseif($event->getItem()->getId() == 35){
             $this->setNextPage($event->getPlayer(), $this->setBack($this->menu[$name]));
             $event->setCancelled(true);
             $this->menu[$name] = $this->setBack($this->menu[$name]);
         }
-        $config = new Config($this->getDataFolder(). "data/". $name . ".json", Config::JSON);
-        if($event->getItem()->getId() == 268 && $event->getItem()->getName() == "§eWeapon - §6" . count($config->get("weapon")). " §eUnlocked!"){
-            $this->setNextPage($event->getPlayer(), 2);
-            $event->setCancelled(true);
-            $this->menu[$name] = 2;
+        elseif($event->getItem()->getId() == 268){
+            if($event->getItem()->getName() == "§eWeapon - §6" . count($config->get("weapon")). " §eUnlocked!"){
+                $this->setNextPage($event->getPlayer(), 2);
+                $event->setCancelled(true);
+                $this->menu[$name] = 2;
+            }
         }
-        if($event->getItem()->getId() == 299 && $event->getItem()->getName() == "§eArmor"){
-            $event->setCancelled(true);
-            $this->setNextPage($event->getPlayer(), 3);
-            $this->menu[$name] = 2;
+        elseif($event->getItem()->getId() == 299){
+            if($event->getItem()->getName() == "§eArmor - §6". count($config->get("armor")). " §eUnlocked!"){
+                $event->setCancelled(true);
+                $this->setNextPage($event->getPlayer(), 3);
+                $this->menu[$name] = 2;
+            }
+        }
+        elseif($event->getItem()->getId() == 388){
+            if($event->getItem()->getName() == "§aEquipment"){
+                $event->setCancelled(true);
+                $this->setNextPage($event->getPlayer(), 4);
+                $this->menu[$name] = 1;
+            }
         }
         if($event->getItem()->getId() == 339){
             $this->getStats($event->getPlayer());
